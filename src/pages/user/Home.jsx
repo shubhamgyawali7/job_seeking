@@ -194,7 +194,7 @@ const Home = () => {
         </div>
 
         {/* CSS scroll animation */}
-        <style jsx>{`
+        <style>{`
           @keyframes scroll-x {
             0% {
               transform: translateX(0%);
