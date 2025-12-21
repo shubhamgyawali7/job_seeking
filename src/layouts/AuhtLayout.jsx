@@ -1,17 +1,22 @@
-import { LOGIN_ROUTE } from '@/constants/routes';
-import React from 'react'
-import { useSelector } from 'react-redux';
-import { Navigate, Outlet } from 'react-router-dom';
+// AuhtLayout.jsx
+import { Outlet, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { LOGIN_ROUTE } from "../constants/routes.js";
 
-const AuthLayout = () => {
+const AuhtLayout = () => {
   const { user } = useSelector((state) => state.auth);
-  // console.log("USER LOGOUT=>",user);
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  console.log("Roles of AuthLayout=>", user.roles[0]);
+
   return (
     <>
-      {user ?  <Outlet /> : <Navigate to={LOGIN_ROUTE}/>}
+      {user.roles[0] === "Seeker" ? <Outlet /> : <Navigate to={LOGIN_ROUTE} />}
+      {/* <Navigate to={LOGIN_ROUTE} /> */}
     </>
   );
 };
 
-
-export default AuthLayout;
+export default AuhtLayout;

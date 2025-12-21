@@ -1,48 +1,96 @@
 import React, { useState, useEffect } from "react";
 import JobCard from "@/components/jobs/JobCard";
 import { getJobs } from "@/api/jobs.js";
+import { getOwnAppliedJobs } from "@/api/apply";
 import { MdViewModule, MdViewList, MdWork, MdRefresh } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import JobsLoader from "@/components/skeleton/JobsLoader";
+import { cn } from "@/lib/utils";
 
 const List = () => {
   const [jobs, setJobs] = useState([]);
   const [viewMode, setViewMode] = useState("grid");
   const [loading, setLoading] = useState(true);
+  const [appliedJobIds, setAppliedJobIds] = useState(new Set());
 
   useEffect(() => {
-    getJobs()
-      .then((response) => {
-        setJobs(response.data || []);
+    const fetchData = async () => {
+      try {
+        // 1. Fetch all jobs
+        const jobsResponse = await getJobs();
+        const canApplyjobs = jobsResponse.data.filter(
+          (job) => new Date(job.deadline) > new Date()
+        );
+        setJobs(canApplyjobs);
+        // setJobs(jobsResponse.data || []);
+
+        // 2. Fetch applied jobs from backend
+        try {
+          const appliedResponse = await getOwnAppliedJobs();
+          console.log("Applied Jobs Response:", appliedResponse.data);
+
+          // Extract job IDs from the response
+          const appliedIds = appliedResponse.data.map((application) => {
+            return application.jobDetails?._id || application.jobId;
+          });
+
+          console.log("Extracted Applied Job IDs:", appliedIds);
+          setAppliedJobIds(new Set(appliedIds));
+        } catch (appliedError) {
+          console.log("No applied jobs or error:", appliedError);
+          setAppliedJobIds(new Set()); // Empty set if no applied jobs
+        }
+
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Error fetching jobs:", error);
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
+  // Function to handle when a job is applied
+  const handleJobApplied = (jobId) => {
+    console.log("Job applied:", jobId);
+    const updatedAppliedJobs = new Set(appliedJobIds);
+    updatedAppliedJobs.add(jobId);
+    setAppliedJobIds(updatedAppliedJobs);
+  };
+
+  console.log("Jobs =>", jobs);
+  console.log("Applied Job IDs =>", Array.from(appliedJobIds));
+
   return (
-    <div className="bg-[#c8bdbc] min-h-screen font-[Poppins]">
+    <div className="bg-[#F8FAFC] min-h-screen font-[Poppins]">
       <Header />
 
       <div className="container mx-auto px-5">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 mt-9 gap-4">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-blue-900">
             {jobs.length} Jobs Available
+            {appliedJobIds.size > 0 && (
+              <span className="text-sm text-gray-600 ml-2">
+                ({appliedJobIds.size} applied)
+              </span>
+            )}
           </h1>
 
           <div className="flex gap-2">
             <Button
               variant={viewMode === "grid" ? "default" : "outline"}
               onClick={() => setViewMode("grid")}
+              className={cn(viewMode === "grid" && "bg-red-300")}
             >
               <MdViewModule size={20} />
             </Button>
+
             <Button
               variant={viewMode === "list" ? "default" : "outline"}
               onClick={() => setViewMode("list")}
+              className={cn(viewMode === "list" && "bg-red-300")}
             >
               <MdViewList size={20} />
             </Button>
@@ -101,6 +149,8 @@ const List = () => {
                 type={job.type || job.workType || "Full-time"}
                 location={job.location || "Remote"}
                 deadline={job.deadline || "No deadline"}
+                isApplied={appliedJobIds.has(job._id)}
+                onJobApplied={handleJobApplied}
               />
             ))}
           </div>

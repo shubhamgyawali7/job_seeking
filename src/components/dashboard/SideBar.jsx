@@ -1,11 +1,19 @@
 import { NavLink } from "react-router-dom";
-import { FaTachometerAlt, FaPlusCircle, FaUsers, FaSignOutAlt, FaCog } from "react-icons/fa";
+import {
+  FaTachometerAlt,
+  FaPlusCircle,
+  FaUsers,
+  FaSignOutAlt,
+  FaCog,
+} from "react-icons/fa";
 import logo from "../../assets/images/logo.png";
 import {
   APPLICANTS_ROUTE,
   DASHBOARD_ROUTE,
-  ADDJOB_ROUTE,
+  JOBSLIST_ROUTE,
 } from "../../constants/routes";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/auth/authSlice";
 
 const menu = [
   {
@@ -15,7 +23,7 @@ const menu = [
     end: true,
   },
   {
-    to: ADDJOB_ROUTE,
+    to: JOBSLIST_ROUTE,
     label: "Add Job",
     icon: <FaPlusCircle className="mr-3 text-xl" />,
     end: true,
@@ -29,8 +37,13 @@ const menu = [
 ];
 
 const SideBar = () => {
+  const dispatch = useDispatch();
+  function handleLogout() {
+    dispatch(logout());
+    // console.log("Clisked=>", logout());
+  }
   return (
-    <aside className="w-64 max-h-full bg-white shadow-2xl rounded-r-3xl flex flex-col items-center py-8 border-r-2 border-slate-100">
+    <aside className="w-64 min-h-full bg-white shadow-2xl rounded-2xl flex flex-col items-center py-8 border-r-2 border-slate-100">
       {/* Logo Section */}
       <div className="mb-12 flex flex-col items-center">
         <div className="bg-slate-50 rounded-2xl p-4 shadow-lg border border-slate-200">
@@ -78,8 +91,11 @@ const SideBar = () => {
             <FaCog className="mr-3 text-xl" />
             Settings
           </button>
-          
-          <button className="flex items-center text-base font-semibold rounded-xl px-4 py-3 transition-all duration-200 w-full text-[#164b7d] hover:bg-[#8a2f36] hover:text-white border-2 border-transparent hover:border-[#8a2f36] transform hover:scale-105">
+
+          <button
+            onClick={handleLogout}
+            className="flex items-center text-base font-semibold rounded-xl px-4 py-3 transition-all duration-200 w-full text-[#164b7d] hover:bg-[#8a2f36] hover:text-white border-2 border-transparent hover:border-[#8a2f36] transform hover:scale-105"
+          >
             <FaSignOutAlt className="mr-3 text-xl" />
             Logout
           </button>

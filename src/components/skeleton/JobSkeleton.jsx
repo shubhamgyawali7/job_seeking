@@ -1,17 +1,22 @@
-const JobSkeleton = () => {
+// JobCardSkeleton.jsx
+export default function JobSkeleton() {
   return (
-    <div className="border overflow-hidden py-4 px-6 bg-white rounded-xl relative h-100 animate-pulse">
-      <div className="flex w-500 h-40  justify-center items-center gap-6">
-        <div className="bg-slate-200 w-30 h-30 rounded-full"></div>
-        <div className="bg-slate-200 w-full h-1/2 "></div>
+    <div className="w-full max-w-md p-6 rounded-lg bg-gray-100 animate-pulse space-y-4">
+      {/* Title */}
+      <div className="h-5 w-2/3 bg-gray-300 rounded"></div>
+
+      {/* Info Rows */}
+      <div className="h-4 w-full bg-gray-300 rounded"></div>
+      <div className="h-4 w-full bg-gray-300 rounded"></div>
+      <div className="h-4 w-full bg-gray-300 rounded"></div>
+      <div className="h-4 w-full bg-gray-300 rounded"></div>
+      <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
+
+      {/* Buttons */}
+      <div className="flex gap-4 pt-2">
+        <div className="h-10 w-1/2 bg-gray-300 rounded"></div>
+        <div className="h-10 w-1/2 bg-gray-300 rounded"></div>
       </div>
-      <div className="bg-slate-200 w-4/5 h-4 mt-3"></div>
-      <div className="bg-slate-200 w-4/5 h-4 my-3"></div>
-      <div className="bg-slate-200 w-4/5 h-4 my-3"></div>
-      <div className="bg-slate-200 w-2/5 h-6 my-7"></div>
-      <div className="bg-slate-200 w-2/5 h-6 "></div>
     </div>
   );
-};
-
-export default JobSkeleton;
+}

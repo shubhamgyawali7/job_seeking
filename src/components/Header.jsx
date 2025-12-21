@@ -6,23 +6,21 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import navMenu from "@/constants/navMenu";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/auth/authSlice";
 
 
-const user = {
-  name: "Ram",
-  email: "Ram@email.com",
+const users = {
   photo: "https://i.pravatar.cc/40?img=3",
 };
 
 const Header = () => {
   const [showProfile, setShowProfile] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [activeTab, setActiveTab] = useState("Home");
+
   const dropdownRef = useRef(null);
-  const notificationRef = useRef(null);
+
   const mobileMenuRef = useRef(null);
 
   const navLinkClass = ({ isActive }) => (isActive ? "text-blue-700 " : "");
@@ -35,18 +33,15 @@ const Header = () => {
     navigate({ pathname: USER_DASHBOARD_ROUTE });
   };
 
-  // const navMenu = [
-  //   { label: "Home" },
-  //   { label: "Jobs" },
-  //   { label: "About" },
-  //   { label: "Contact" },
-  // ];
+const {user} = useSelector((state)=>state.auth);
 
+// const navigate = useNavigate();
   const dispatch = useDispatch();
 
   function handleLogout() {
     dispatch(logout());
     // console.log("Clisked=>", logout());
+    navigate('/login');
   }
 
   return (
@@ -105,12 +100,12 @@ const Header = () => {
                 className="flex items-center space-x-2 p-1 rounded-full hover:bg-gray-100 transition-colors"
               >
                 <img
-                  src={user.photo}
+                  src={users?.photo}
                   alt="Profile"
                   className="h-8 w-8 rounded-full border-2 border-white shadow-sm"
                 />
                 <span className="hidden sm:block text-sm font-medium text-gray-700">
-                  {user.name}
+                  {user?.name}
                 </span>
               </button>
 
@@ -119,16 +114,16 @@ const Header = () => {
                   <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center space-x-3">
                       <img
-                        src={user.photo}
+                        src={users.photo}
                         alt="Profile"
                         className="h-12 w-12 rounded-full"
                       />
                       <div>
                         <div className="font-semibold text-gray-900">
-                          {user.name}
+                          {user?.name}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {user.email}
+                          {user?.email}
                         </div>
                       </div>
                     </div>

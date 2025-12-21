@@ -4,7 +4,7 @@ import { loginUser, regisetrUser } from "./authActions";
 const auhtSlice = createSlice({
   name: "auth",
   initialState: {
-    user: "TEST",
+    user: null,
     loading: false,
     error: null,
   },
@@ -12,9 +12,9 @@ const auhtSlice = createSlice({
     //     // setUser(state, action) {
     //     //   state.user = action.payload;
     //     // },
-    logout(state, action) {
+    logout(state) {
       state.user = null;
-      console.log(state.user);
+      console.log("Logout", state.user);
     },
   },
   extraReducers: (builder) => {

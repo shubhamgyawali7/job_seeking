@@ -5,10 +5,9 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-
 import {
   DASHBOARD_ROUTE,
-  ADDJOB_ROUTE,
+  JOBSLIST_ROUTE,
   APPLICANTS_ROUTE,
   JOB_ROUTE,
   ABOUT_ROUTE,
@@ -30,7 +29,7 @@ import Contact from "./pages/user/Contact.jsx";
 import List from "./pages/user/job/List.jsx";
 import Detail from "./pages/user/job/Detail.jsx";
 import Profile from "./pages/user/auth/Profile.jsx";
-import UserDashboard from "./pages/user/auth/Dashboard.jsx";
+import UserDashboard from "./pages/user/auth/UserDashboard.jsx";
 import Register from "./pages/user/auth/Register.jsx";
 import Login from "./pages/user/auth/Login.jsx";
 import AuhtLayout from "./layouts/AuhtLayout.jsx";
@@ -40,38 +39,45 @@ const Routes = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route>
-        {/* <Route index path="" element={<Header />} /> */}
-        <Route path="/" element={<Home />} />
+        {/* Public Home Route - accessible to everyone */}
+
+        {/* Authenticated User Routes (for Seekers) */}
         <Route element={<AuhtLayout />}>
           <Route index path="/" element={<Home />} />
+          {/* Job browsing routes */}
           <Route path={JOB_ROUTE}>
             <Route index element={<List />} />
-            <Route path={":id"} element={<Detail />} />
+            <Route path=":id" element={<Detail />} />
           </Route>
 
+          {/* User-specific routes */}
           <Route path={ABOUT_ROUTE} element={<About />} />
           <Route path={CONTACT_ROUTE} element={<Contact />} />
           <Route path={PROFILE_ROUTE} element={<Profile />} />
+          <Route path={USER_DASHBOARD_ROUTE} element={<UserDashboard />} />
         </Route>
+
+        {/* Unauthenticated Routes (Login/Register) */}
         <Route element={<UnauthLayout />}>
-          <Route>
-            <Route path={LOGIN_ROUTE} element={<Login />} />
-            <Route path={REGISTER_ROUTE} element={<Register />} />
-          </Route>
+          <Route index path={LOGIN_ROUTE} element={<Login />} />
+          <Route path={REGISTER_ROUTE} element={<Register />} />
         </Route>
-        <Route path={USER_DASHBOARD_ROUTE} element={<UserDashboard />} />
+
+        {/* Company/Recruiter Dashboard Routes */}
         <Route element={<DashboardLayout />}>
           <Route index path={DASHBOARD_ROUTE} element={<Dashboard />} />
-          <Route path={ADDJOB_ROUTE}>
+          {/* Job management routes */}
+          <Route path={JOBSLIST_ROUTE}>
             <Route index element={<JobList />} />
-            <Route path={"add"} element={<AddJob />} />
-            <Route path={"edit/:id"} element={<EditJob />} />
+            <Route path="add" element={<AddJob />} />
+            <Route path="edit/:id" element={<EditJob />} />
           </Route>
           <Route path={APPLICANTS_ROUTE} element={<ApplicantList />} />
         </Route>
       </Route>
     )
   );
+
   return <RouterProvider router={router} />;
 };
 

@@ -1,7 +1,8 @@
 import axios from "axios";
 
-const baseUrl = " https://jobportal-backend-sigma.vercel.app";
+const authToken = localStorage.getItem("authToken");
 
+const baseUrl = " http://localhost:5001";
 
 const getJobs = async () => {
   const response = await axios.get(`${baseUrl}/api/jobs`);
@@ -9,12 +10,36 @@ const getJobs = async () => {
   return response;
 };
 
-const getJobById = async (id) =>{
+const getJobById = async (id) => {
   const response = await axios.get(`${baseUrl}/api/jobs/${id}`);
   //  console.log("Job Details:", response.data);
   return response;
-}
+};
 
+const editJob = async (id, data) => {
+  // console.log("Apply Api=>>", authToken);
+  const response = await axios.put(
+    `${baseUrl}/api/jobs/${id}`,
+    { data },
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    }
+  );
 
+  return response;
+};
 
-export { getJobs,getJobById};
+const addJob = async (data) => {
+  const response = await axios.post(`${baseUrl}/api/jobs`, data, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+  console.log("Apply Api=>>", response.data);
+  return response;
+};
+
+export { getJobs, getJobById, editJob, addJob };

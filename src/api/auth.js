@@ -8,6 +8,7 @@ const login = async ({ email, password }) => {
     email,
     password,
   });
+
   // console.log("Bacekedn", response.data);
   // console.log("Login:=>", response);
   return response;

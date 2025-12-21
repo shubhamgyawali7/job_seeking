@@ -1,12 +1,39 @@
 import axios from "axios";
 
-// const baseUrl = " https://jobportal-backend-sigma.vercel.app";
-const baseUrl = " http://localhost:5000";
+const authToken = localStorage.getItem("authToken");
 
-const getOnlyAppliedJobs = async () => {
-  const response = await axios.get(`${baseUrl}/api/apply/user/jobs`);
-  console.log(response);
-//   return response;
+// const baseUrl = " https://jobportal-backend-sigma.vercel.app";
+const baseUrl = " http://localhost:5001";
+
+
+const applyJobs = async(id)=>{
+  // console.log("AuthToken=>",authToken);
+  const response = await axios.post(`${baseUrl}/api/apply/`,{
+      jobId: id 
+    },
+  {
+    headers:{
+      Authorization : `Bearer ${authToken}`,
+    },
+  });
+  console.log(id);
+  return response;
+}
+
+const getOwnAppliedJobs = async () => {
+  const response = await axios.get(`${baseUrl}/api/apply/user/jobs`, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+  console.log("Apply Api=>>", response.data);
+  return response;
 };
 
-export default { getOnlyAppliedJobs };
+export { getOwnAppliedJobs,applyJobs };
+
+// router.post("/",[auth,rolesBasedAuth("Seeker")],applyJobs);
+// router.get("/",getAllApplyJobs);
+// router.get("/:id",getApplyJobsById);
+
+//  router.get("/user/jobs",[auth,rolesBasedAuth("Seeker")],getOnlyApplyJobs);

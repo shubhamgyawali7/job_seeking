@@ -1,3 +1,4 @@
+import { applyJobs } from "@/api/apply";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,17 +8,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import {
   MdOutlineTimer,
   MdOutlineAttachMoney,
   MdBusinessCenter,
-  MdWorkOutline,
   MdLocationOn,
   MdBusiness,
   MdBookmark,
   MdShare,
+  MdCheckCircle,
 } from "react-icons/md";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const JobCard = ({
   id,
@@ -30,9 +33,16 @@ const JobCard = ({
   type,
   deadline,
   className = "",
+  isApplied: isAppliedProp,
+  onJobApplied,
 }) => {
+  const [isApplied, setIsApplied] = useState(isAppliedProp || false);
 
-  // Helper function to get type color
+  // Update when prop changes
+  useEffect(() => {
+    setIsApplied(isAppliedProp || false);
+  }, [isAppliedProp]);
+
   const getTypeColor = (type) => {
     const typeColors = {
       Remote: "bg-green-100 text-green-800",
@@ -46,31 +56,76 @@ const JobCard = ({
     return typeColors[type] || "bg-gray-100 text-gray-800";
   };
 
-  // Helper function to check if deadline is urgent
   const isUrgent = (deadline) => {
     if (!deadline) return false;
-    const deadlineDate = new Date(deadline);
-    const today = new Date();
-    const diffTime = deadlineDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 3 && diffDays >= 0;
+    return new Date() > new Date(deadline);
   };
 
-  // Handle navigation to job details page
-  const handleViewDetails = (e) => {
-   console.log("ID",id);
+  const formatDate = (date) => {
+    if (!date) return "";
+    return new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
+
+  const handleApplyNow = async () => {
+    if (isApplied) {
+      toast.info(`You have already applied to ${title}!`);
+      return;
+    }
+    if (isUrgent(deadline)) {
+      toast.error("Application deadline has passed!");
+      return;
+    }
+    try {
+      await applyJobs(id);
+      setIsApplied(true);
+      toast.success(`Applied to ${title} successfully!`);
+
+      if (onJobApplied) {
+        onJobApplied(id);
+      }
+    } catch (error) {
+      console.error("Apply Error:", error);
+
+      if (
+        error.response?.status === 400 ||
+        error.response?.data?.message?.includes("already") ||
+        error.message?.includes("already")
+      ) {
+        setIsApplied(true);
+        toast.info(`You have already applied to ${title}!`);
+        if (onJobApplied) {
+          onJobApplied(id);
+        }
+      } else {
+        toast.error(`Can't apply to ${title}!`);
+      }
+    }
+  };
+  
   return (
     <Card
-      className={`group relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 bg-white ${className}`}
+      className={`group relative overflow-hidden border-1 shadow-lg hover:shadow-xl border-transparent hover:border-blue-400 transition-all duration-300 hover:-translate-y-1 ${className}
+      ${isUrgent(deadline)? `bg-red-200`:`bg-blue-100`}`}
     >
-      {/* Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      {/* Urgent deadline indicator */}
-      {isUrgent(deadline) && (
-        <div className="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded-bl-lg">
-          Urgent
+      <div
+        className={`absolute top-0 right-0 
+          ${isUrgent(deadline) ? `bg-red-700` : `bg-green-600`}
+          text-white px-2 py-1 text-xs font-semibold rounded-bl-lg z-10`}
+      >
+        {isUrgent(deadline) ? "Closed" : "Open"}
+      </div>
+
+      {/* Applied badge - UNCOMMENT THIS */}
+      {isApplied && (
+        <div className="absolute top-0 left-0 bg-blue-600 text-white px-3 py-1 text-xs font-semibold rounded-br-lg flex items-center gap-1 z-10">
+          <MdCheckCircle size={14} />
+          Applied
         </div>
       )}
 
@@ -119,7 +174,6 @@ const JobCard = ({
       </CardHeader>
 
       <CardContent className="relative z-10 space-y-4">
-        {/* Location and Job Type */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-gray-600">
             <MdLocationOn size={18} className="text-gray-400" />
@@ -134,7 +188,6 @@ const JobCard = ({
           </span>
         </div>
 
-        {/* Job Details Grid */}
         <div className="grid grid-cols-1 gap-3">
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="p-2 bg-blue-100 rounded-lg">
@@ -169,7 +222,7 @@ const JobCard = ({
                   isUrgent(deadline) ? "text-red-600" : "text-gray-900"
                 }`}
               >
-                {deadline}
+                {formatDate(deadline)}
               </p>
             </div>
           </div>
@@ -179,11 +232,23 @@ const JobCard = ({
       <CardFooter className="relative z-10 pt-4">
         <div className="w-full space-y-2">
           <Button
-            className="w-full bg-gradient-to-r bg-red-800 hover:from-blue-700 hover:bg-red-600 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+            className={`w-full font-semibold py-3 rounded-lg shadow-md transition-all duration-300 ${
+              isApplied || isUrgent(deadline)
+                ? "bg-gray-400 hover:bg-gray-500 cursor-not-allowed"
+                : "bg-gradient-to-r bg-red-800 hover:from-blue-700 hover:bg-red-600 transform hover:scale-[1.02] hover:shadow-lg"
+            } text-white`}
             size="lg"
-            // onClick={handleApplyNow}
+            onClick={handleApplyNow}
+            disabled={isApplied}
           >
-            Apply Now
+            {isApplied || isUrgent(deadline) ? (
+              <span className="flex items-center justify-center gap-2">
+                <MdCheckCircle size={20} />
+                Already Applied
+              </span>
+            ) : (
+              "Apply Now"
+            )}
           </Button>
 
           <Button
@@ -191,7 +256,6 @@ const JobCard = ({
             variant="outline"
             className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-2 rounded-lg transition-all duration-300"
             size="sm"
-            onClick={handleViewDetails}
           >
             <Link to={id}>View Details</Link>
           </Button>
