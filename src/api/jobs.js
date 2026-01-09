@@ -2,7 +2,7 @@ import axios from "axios";
 
 const authToken = localStorage.getItem("authToken");
 
-const baseUrl = " http://localhost:5001";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const getJobs = async () => {
   const response = await axios.get(`${baseUrl}/api/jobs`);
@@ -38,7 +38,7 @@ const addJob = async (data) => {
       "Content-Type": "application/json",
     },
   });
-  console.log("Apply Api=>>", response.data);
+  // console.log("Apply Api=>>", response.data);
   return response;
 };
 

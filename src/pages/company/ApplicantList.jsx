@@ -86,7 +86,7 @@ const ApplicantList = () => {
     }
   };
 
-  console.log("Jobs=>", jobs);
+  // console.log("Jobs=>", jobs);
   // Extract all unique job titles for the filter dropdown
   const uniqueJobTitles = ["All", ...new Set(jobs.map((job) => job.jobTitle))];
 

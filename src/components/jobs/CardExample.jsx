@@ -32,7 +32,7 @@ const JobCard = ({
   className = "",
 }) => {
   const navigate = useNavigate();
-console.log("ID",id);
+// console.log("ID",id);
   // Helper function to get type color
   const getTypeColor = (type) => {
     const typeColors = {
@@ -69,7 +69,7 @@ console.log("ID",id);
     e.preventDefault();
     e.stopPropagation();
     // You can add apply logic here or navigate to apply page
-    console.log(`Applying for job ${id}`);
+    // console.log(`Applying for job ${id}`);
     // navigate(`/jobs/${id}/apply`); // Alternative: navigate to apply page
   };
 

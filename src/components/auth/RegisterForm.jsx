@@ -21,17 +21,17 @@ const RegisterForm = () => {
   const { loading } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
-  console.log("PopUP=>", RolePopup);
+  // console.log("PopUP=>", RolePopup);
 
   function handleRegister(data) {
-    console.log("REGISTER without Role=>", data);
+    // console.log("REGISTER without Role=>", data);
     setFormData(data); // Save form data
     setRolePopup(true); // Show role popup
   }
 
   function handleSelectedRole(role) {
     const fullData = { ...formData, roles: role }; // Add selected role to form data
-    console.log("Dispatching with role:", fullData);
+    // console.log("Dispatching with role:", fullData);
 
     dispatch(regisetrUser(fullData));
     setRolePopup(false); // Close role popup

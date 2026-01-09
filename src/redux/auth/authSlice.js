@@ -14,7 +14,7 @@ const auhtSlice = createSlice({
     //     // },
     logout(state) {
       state.user = null;
-      console.log("Logout", state.user);
+      // console.log("Logout", state.user);
     },
   },
   extraReducers: (builder) => {

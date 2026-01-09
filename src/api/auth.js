@@ -1,9 +1,10 @@
 import axios from "axios";
 
 // const baseUrl = " https://jobportal-backend-sigma.vercel.app";
-const baseUrl = " http://localhost:5001";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const login = async ({ email, password }) => {
+  // console.log("Login API called with:", email, password);
   const response = await axios.post(`${baseUrl}/api/auth/login`, {
     email,
     password,

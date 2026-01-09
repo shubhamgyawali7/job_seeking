@@ -19,7 +19,7 @@ const jobsSlice = createSlice({
       .addCase(recruterAddedJobs.fulfilled, (state, action) => {
         state.loading = false;
         state.jobs = action.payload;
-        console.log("Slice=>", action.payload);
+        // console.log("Slice=>", action.payload);
         state.error = null;
       })
       .addCase(recruterAddedJobs.rejected, (state, action) => {

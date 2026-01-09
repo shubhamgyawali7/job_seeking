@@ -28,14 +28,14 @@ const List = () => {
         // 2. Fetch applied jobs from backend
         try {
           const appliedResponse = await getOwnAppliedJobs();
-          console.log("Applied Jobs Response:", appliedResponse.data);
+          // console.log("Applied Jobs Response:", appliedResponse.data);
 
           // Extract job IDs from the response
           const appliedIds = appliedResponse.data.map((application) => {
             return application.jobDetails?._id || application.jobId;
           });
 
-          console.log("Extracted Applied Job IDs:", appliedIds);
+          // console.log("Extracted Applied Job IDs:", appliedIds);
           setAppliedJobIds(new Set(appliedIds));
         } catch (appliedError) {
           console.log("No applied jobs or error:", appliedError);
@@ -54,14 +54,14 @@ const List = () => {
 
   // Function to handle when a job is applied
   const handleJobApplied = (jobId) => {
-    console.log("Job applied:", jobId);
+    // console.log("Job applied:", jobId);
     const updatedAppliedJobs = new Set(appliedJobIds);
     updatedAppliedJobs.add(jobId);
     setAppliedJobIds(updatedAppliedJobs);
   };
 
-  console.log("Jobs =>", jobs);
-  console.log("Applied Job IDs =>", Array.from(appliedJobIds));
+  // console.log("Jobs =>", jobs);
+  // console.log("Applied Job IDs =>", Array.from(appliedJobIds));
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-[Poppins]">

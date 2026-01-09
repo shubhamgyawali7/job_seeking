@@ -36,12 +36,12 @@ const Roles = ({ onRoleSelected }) => {
     const bgColor = role === "Recruiter" ? "bg-red-400" : "bg-blue-400";
     setSelectBg(bgColor);
 
-    console.log(bgColor === "bg-red-500" ? "RED" : "BLUE");
+    // console.log(bgColor === "bg-red-500" ? "RED" : "BLUE");
   }
 
   function handleContinue() {
     if (selectRole) {
-      console.log("Roles Comp=>",selectRole);
+      // console.log("Roles Comp=>",selectRole);
       onRoleSelected(selectRole); // ✅ Dispatches registration from parent
     }
   }

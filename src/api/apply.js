@@ -3,7 +3,7 @@ import axios from "axios";
 const authToken = localStorage.getItem("authToken");
 
 // const baseUrl = " https://jobportal-backend-sigma.vercel.app";
-const baseUrl = " http://localhost:5001";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 
 const applyJobs = async(id)=>{
@@ -16,7 +16,7 @@ const applyJobs = async(id)=>{
       Authorization : `Bearer ${authToken}`,
     },
   });
-  console.log(id);
+  // console.log(id);
   return response;
 }
 
@@ -26,7 +26,7 @@ const getOwnAppliedJobs = async () => {
       Authorization: `Bearer ${authToken}`,
     },
   });
-  console.log("Apply Api=>>", response.data);
+  // console.log("Apply Api=>>", response.data);
   return response;
 };
 

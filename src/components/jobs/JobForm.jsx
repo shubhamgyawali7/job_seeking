@@ -45,7 +45,7 @@ const JobForm = ({ job }) => {
   const { register, formState, handleSubmit } = useForm({
     values: initialValue,
   });
-  console.log("Bacend Data=>", job);
+  // console.log("Bacend Data=>", job);
   const { errors } = formState;
   const navigate = useNavigate();
   const isEditing = !!job;

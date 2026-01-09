@@ -4,7 +4,7 @@ import { data } from "react-router-dom";
 const authToken = localStorage.getItem("authToken");
 
 // const baseUrl = " https://jobportal-backend-sigma.vercel.app";
-const baseUrl = " http://localhost:5001";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const addedJobs = async () => {
   const response = await axios.get(`${baseUrl}/api/dashboard/added/jobs`, {
