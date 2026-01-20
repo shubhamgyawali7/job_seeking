@@ -30,10 +30,10 @@ import List from "./pages/user/job/List.jsx";
 import Detail from "./pages/user/job/Detail.jsx";
 import Profile from "./pages/user/auth/Profile.jsx";
 import UserDashboard from "./pages/user/auth/UserDashboard.jsx";
-import Register from "./pages/user/auth/Register.jsx";
-import Login from "./pages/user/auth/Login.jsx";
 import AuhtLayout from "./layouts/AuhtLayout.jsx";
 import UnauthLayout from "./layouts/UnauthLayout.jsx";
+import Login from "./pages/auth/Login.jsx";
+import Register from "./pages/auth/Register.jsx";
 
 const Routes = () => {
   const router = createBrowserRouter(

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser, regisetrUser } from "./authActions";
+import { loginUser,  registerUser } from "./authActions";
 
 const auhtSlice = createSlice({
   name: "auth",
@@ -7,49 +7,46 @@ const auhtSlice = createSlice({
     user: null,
     loading: false,
     error: null,
+    isAuthenticated: false,
   },
   reducers: {
-    //     // setUser(state, action) {
-    //     //   state.user = action.payload;
-    //     // },
     logout(state) {
       state.user = null;
-      // console.log("Logout", state.user);
+      state.isAuthenticated = false;
+      localStorage.removeItem("authToken");
     },
   },
   extraReducers: (builder) => {
-    //pending, fullfilled, rejected
     builder
-      .addCase(loginUser.pending, (state, action) => {
+      .addCase(loginUser.pending, (state) => {
         state.loading = true;
-        state.user = null;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        // console.log("Login fulfilled:", action.payload);
         state.loading = false;
         state.user = action.payload;
+        state.isAuthenticated = true;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.user = null;
         state.error = action.payload;
       })
-      .addCase(regisetrUser.pending, (state, action) => {
+
+      .addCase(registerUser.pending, (state) => {
         state.loading = true;
-        state.user = null;
         state.error = null;
       })
-      .addCase(regisetrUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.loading = false;
-        state.user = action.payload;
         state.error = null;
       })
-      .addCase(regisetrUser.rejected, (state, action) => {
+      .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
-        state.user = null;
         state.error = action.payload;
       });
+
   },
 });
 
