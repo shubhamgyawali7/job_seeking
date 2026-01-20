@@ -11,7 +11,7 @@ const login = async ({ email, password }) => {
   });
 
   // console.log("Bacekedn", response.data);
-  // console.log("Login:=>", response);
+  console.log("Login:=>", response);
   return response;
 };
 

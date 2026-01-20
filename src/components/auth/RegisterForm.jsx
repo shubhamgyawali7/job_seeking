@@ -1,132 +1,154 @@
-import { Link } from "react-router-dom";
-import registerbg from "../../assets/images/register-bg.jpg";
-import { useDispatch, useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { LOGIN_ROUTE } from "@/constants/routes";
-import { regisetrUser } from "@/redux/auth/authActions";
 import { useState } from "react";
-import Roles from "./Roles";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@radix-ui/react-popover";
-import Spinner from "../Spinner";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+import { registerUser } from "@/redux/auth/authActions";
+// import Roles from "@/pages/auth/Roles";
+import { Spinner } from "@/components/ui/shadcn-io/spinner";
+import RoleOptionCard from "./RoleOptionCard";
 
 const RegisterForm = () => {
-  const [RolePopup, setRolePopup] = useState(false);
-  const [formData, setFormData] = useState({});
-  const { register, handleSubmit } = useForm();
-
-  const { loading } = useSelector((state) => state.auth);
-
   const dispatch = useDispatch();
-  // console.log("PopUP=>", RolePopup);
+  const navigate = useNavigate();
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
+
+  const { loading, error } = useSelector((state) => state.auth);
+
+  const [showRoles, setShowRoles] = useState(false);
+  const [formData, setFormData] = useState({});
+
+  const password = watch("password");
+
+  // STEP 1: submit form → open role modal
   function handleRegister(data) {
-    // console.log("REGISTER without Role=>", data);
-    setFormData(data); // Save form data
-    setRolePopup(true); // Show role popup
+    setFormData(data); // includes confirmPassword
+    setShowRoles(true);
   }
 
-  function handleSelectedRole(role) {
-    const fullData = { ...formData, roles: role }; // Add selected role to form data
-    // console.log("Dispatching with role:", fullData);
+  // STEP 2: role selected → send ALL data to backend
 
-    dispatch(regisetrUser(fullData));
-    setRolePopup(false); // Close role popup
-    setFormData({}); // Reset form data
+  async function handleRoleSelected(role) {
+    const finalData = {
+      ...formData,
+      roles: [role],
+    };
+
+    try {
+      await dispatch(registerUser(finalData)).unwrap();
+      setShowRoles(false);
+      navigate("/login"); 
+    } catch (err) {
+      setShowRoles(false);
+      console.error("Registration failed:", err);
+    }
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-10">
-      {/* Blurred background image */}
-      <div
-        className="absolute inset-0 bg-no-repeat bg-cover bg-center filter blur-sm -z-10"
-        style={{ backgroundImage: `url(${registerbg})` }}
-      ></div>
-
-      {/* Form container */}
-      <div className="relative z-10 bg-white shadow-2xl rounded-2xl w-full max-w-lg p-8">
-        <h2 className="text-3xl font-extrabold text-blue-900 text-center mb-2">
-          Join the Career Network
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white shadow-2xl rounded-2xl w-full max-w-lg p-8">
+        <h2 className="text-3xl font-bold text-center text-blue-900 mb-6">
+          Create Account
         </h2>
-        <p className="text-red-900 text-center mb-6">
-          Create your account and land your dream job
-        </p>
+
+        {error && (
+          <p className="text-red-600 text-center mb-4">
+            {error.message || error}
+          </p>
+        )}
 
         <form className="space-y-4" onSubmit={handleSubmit(handleRegister)}>
+          {/* Name */}
           <div className="flex gap-4">
             <input
-              type="text"
-              name="firstName"
+              {...register("firstname", { required: "First name required" })}
               placeholder="First Name"
-              className="w-1/2 px-4 py-2 border-2 border-blue-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-20 text-blue-900 placeholder-blue-400"
-              {...register("firstname")}
+              className="w-1/2 border px-4 py-2 rounded-lg"
             />
             <input
-              type="text"
-              name="lastName"
+              {...register("lastname", { required: "Last name required" })}
               placeholder="Last Name"
-              className="w-1/2 px-4 py-2 border-2 border-blue-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-20 text-blue-900 placeholder-blue-400"
-              {...register("lastname")}
+              className="w-1/2 border px-4 py-2 rounded-lg"
             />
           </div>
 
+          {/* Email */}
           <input
+            {...register("email", { required: "Email required" })}
             type="email"
-            name="email"
-            placeholder="Email Address"
-            className="w-full px-4 py-2 border-2 border-blue-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-20 text-blue-900 placeholder-blue-400"
-            {...register("email")}
+            placeholder="Email"
+            className="w-full border px-4 py-2 rounded-lg"
           />
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email.message}</p>
+          )}
 
+          {/* Password */}
           <input
+            {...register("password", {
+              required: "Password required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
             type="password"
-            name="password"
             placeholder="Password"
-            className="w-full px-4 py-2 border-2 border-blue-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-20 text-blue-900 placeholder-blue-400"
-            {...register("password")}
+            className="w-full border px-4 py-2 rounded-lg"
           />
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password.message}</p>
+          )}
 
+          {/* Confirm Password */}
           <input
+            {...register("confirmPassword", {
+              required: "Confirm Password required",
+              validate: (value) =>
+                value === password || "Confirm Password doesn't match",
+            })}
             type="password"
-            name="confirmPassword"
             placeholder="Confirm Password"
-            className="w-full px-4 py-2 border-2 border-blue-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-900 focus:ring-opacity-20 text-blue-900 placeholder-blue-400"
-            {...register("confirmPassword")}
+            className="w-full border px-4 py-2 rounded-lg"
           />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm">
+              {errors.confirmPassword.message}
+            </p>
+          )}
 
           <button
             type="submit"
-            className="w-full text-white py-3 rounded-lg transition duration-300 bg-[#883139] hover:bg-red-700 cursor-pointer"
+            className="w-full bg-red-800 hover:bg-red-700 text-white py-3 rounded-lg transition"
           >
-            {loading ? (
-              <Spinner
-                key="ellipsis"
-                variant="ellipsis"
-                className="w-[350px] text-blue-100"
-              />
-            ) : (
-              "Create Account"
-            )}
+            {loading ? <Spinner className="mx-auto" /> : "Continue"}
           </button>
-          {RolePopup && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-white/20">
-              <div className="bg-white/80 border border-white rounded-xl shadow-2xl p-6 w-full relative">
-                <Roles onRoleSelected={handleSelectedRole} />
-              </div>
-            </div>
-          )}
         </form>
 
-        <p className="text-center text-red-900 text-sm mt-4">
+        <p className="text-center text-sm mt-6">
           Already have an account?{" "}
-          <Link to={LOGIN_ROUTE} className="text-[#174a83] hover:underline">
-            Log In
+          <Link
+            to="/login"
+            className="text-blue-900 font-semibold hover:underline"
+          >
+            Login
           </Link>
         </p>
       </div>
+
+      {/* ROLE MODAL */}
+      {showRoles && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 shadow-2xl max-w-xl w-full">
+            <RoleOptionCard onRoleSelected={handleRoleSelected} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
